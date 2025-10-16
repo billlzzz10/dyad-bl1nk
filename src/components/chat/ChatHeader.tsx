@@ -87,9 +87,12 @@ export function ChatHeader({
       try {
         await IpcClient.getInstance().clearChat(selectedChatId);
         await refreshChats();
-        showSuccess("Chat cleared successfully");
+        setIsClearChatDialogOpen(false);
+        showSuccess(t("chat.clearChatSuccess") ?? "Chat cleared successfully");
       } catch (error) {
-        showError(`Failed to clear chat: ${(error as any).toString()}`);
+        showError(
+          `${t("chat.clearChatError") ?? "Failed to clear chat"}: ${(error as any).toString()}`,
+        );
       }
     }
   };
