@@ -270,7 +270,18 @@ export function registerChatStreamHandlers() {
 
         for (const [index, attachment] of req.attachments.entries()) {
           if (attachment.attachmentType === "rag-document") {
-            ragContent += `\n\n--- Document: ${attachment.name} ---\n${attachment.data}\n--- End Document ---\n\n`;
+            const docHeader = `\n\n--- Document: ${attachment.name} ---\n`;
+            const docFooter = `\n--- End Document ---\n\n`;
+            const newDoc = `${docHeader}${attachment.data}${docFooter}`;
+            const MAX_RAG_CHARS = 50000; // cap total RAG text appended to avoid huge prompts
+            // If adding this document would exceed the cap, add as much as will fit and append a truncation notice.
+            if (ragContent.length + newDoc.length > MAX_RAG_CHARS) {
+              const truncNote = "\n\n[Document truncated due to size]\n\n";
+              const remaining = Math.max(0, MAX_RAG_CHARS - ragContent.length - truncNote.length);
+              ragContent += newDoc.slice(0, remaining) + truncNote;
+            } else {
+              ragContent += newDoc;
+            }
             continue;
           }
 
