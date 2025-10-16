@@ -1,4 +1,4 @@
-import { Paperclip, MessageSquare, Upload } from "lucide-react";
+import { Paperclip, MessageSquare, Upload, FileText } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +17,7 @@ import { useRef } from "react";
 interface FileAttachmentDropdownProps {
   onFileSelect: (
     files: FileList,
-    type: "chat-context" | "upload-to-codebase",
+    type: "chat-context" | "upload-to-codebase" | "rag-document",
   ) => void;
   disabled?: boolean;
   className?: string;
@@ -30,6 +30,7 @@ export function FileAttachmentDropdown({
 }: FileAttachmentDropdownProps) {
   const chatContextFileInputRef = useRef<HTMLInputElement>(null);
   const uploadToCodebaseFileInputRef = useRef<HTMLInputElement>(null);
+  const ragDocumentFileInputRef = useRef<HTMLInputElement>(null);
 
   const handleChatContextClick = () => {
     chatContextFileInputRef.current?.click();
@@ -39,9 +40,13 @@ export function FileAttachmentDropdown({
     uploadToCodebaseFileInputRef.current?.click();
   };
 
+  const handleRagDocumentClick = () => {
+    ragDocumentFileInputRef.current?.click();
+  };
+
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: "chat-context" | "upload-to-codebase",
+    type: "chat-context" | "upload-to-codebase" | "rag-document",
   ) => {
     if (e.target.files && e.target.files.length > 0) {
       onFileSelect(e.target.files, type);
@@ -103,6 +108,23 @@ export function FileAttachmentDropdown({
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuItem
+                      onClick={handleRagDocumentClick}
+                      className="py-3 px-4"
+                    >
+                      <FileText size={16} className="mr-2" />
+                      Upload Document for RAG
+                    </DropdownMenuItem>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    Example use case: upload a document for the AI to reference
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </DropdownMenuContent>
           </DropdownMenu>
           <TooltipContent>Attach files</TooltipContent>
@@ -127,6 +149,15 @@ export function FileAttachmentDropdown({
         className="hidden"
         multiple
         accept=".jpg,.jpeg,.png,.gif,.webp,.txt,.md,.js,.ts,.html,.css,.json,.csv"
+      />
+      <input
+        type="file"
+        data-testid="rag-document-file-input"
+        ref={ragDocumentFileInputRef}
+        onChange={(e) => handleFileChange(e, "rag-document")}
+        className="hidden"
+        multiple
+        accept=".txt,.md,.pdf,.docx"
       />
     </>
   );

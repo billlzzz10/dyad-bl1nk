@@ -1,0 +1,17 @@
+{
+  "settings": {
+    "title": "Settings",
+    "general": "General Settings",
+    "theme": "Theme",
+    "language": "Language"
+  },
+  "chat": {
+    "clearChat": "Clear Chat",
+    "clearChatConfirmation": {
+      "title": "Are you sure?",
+      "message": "This will permanently delete the current chat history. This action cannot be undone.",
+      "confirm": "Clear Chat",
+      "cancel": "Cancel"
+    }
+  }
+}

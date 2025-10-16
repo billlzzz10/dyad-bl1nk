@@ -84,6 +84,20 @@ export function useStreamChat({
         return;
       }
 
+      let ragContent = "";
+      const otherAttachments: FileAttachment[] = [];
+      if (attachments) {
+        for (const attachment of attachments) {
+          if (attachment.type === "rag-document") {
+            ragContent += `\n\n--- Document: ${
+              attachment.file.name
+            } ---\n${await attachment.file.text()}\n--- End Document ---\n\n`;
+          } else {
+            otherAttachments.push(attachment);
+          }
+        }
+      }
+
       setRecentStreamChatIds((prev) => {
         const next = new Set(prev);
         next.add(chatId);
@@ -103,11 +117,11 @@ export function useStreamChat({
 
       let hasIncrementedStreamCount = false;
       try {
-        IpcClient.getInstance().streamMessage(prompt, {
+        IpcClient.getInstance().streamMessage(ragContent + prompt, {
           selectedComponent: selectedComponent ?? null,
           chatId,
           redo,
-          attachments,
+          attachments: otherAttachments,
           onUpdate: (updatedMessages: Message[]) => {
             if (!hasIncrementedStreamCount) {
               setStreamCountById((prev) => {

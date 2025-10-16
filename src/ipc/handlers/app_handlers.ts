@@ -1,7 +1,7 @@
 import { ipcMain, app } from "electron";
 import { db, getDatabasePath } from "../../db";
 import { apps, chats, messages } from "../../db/schema";
-import { desc, eq, like } from "drizzle-orm";
+import { desc, eq, like, and } from "drizzle-orm";
 import type {
   App,
   CreateAppParams,
@@ -1533,6 +1533,10 @@ export function registerAppHandlers() {
       return uniqueApps;
     },
   );
+
+  handle("clear-chat", async (_, chatId: number) => {
+    await db.delete(messages).where(eq(messages.chatId, chatId));
+  });
 }
 
 function getCommand({

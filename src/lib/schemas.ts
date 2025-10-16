@@ -257,6 +257,7 @@ export const UserSettingsSchema = z.object({
   enableProSaverMode: z.boolean().optional(),
   dyadProBudget: DyadProBudgetSchema.optional(),
   runtimeMode: RuntimeModeSchema.optional(),
+  language: z.string().optional(),
 });
 
 /**

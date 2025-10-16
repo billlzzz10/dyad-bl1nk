@@ -24,10 +24,10 @@ export interface ChatStreamParams {
   prompt: string;
   redo?: boolean;
   attachments?: Array<{
-    name: string;
+    name:string;
     type: string;
     data: string; // Base64 encoded file data
-    attachmentType: "upload-to-codebase" | "chat-context"; // FileAttachment type
+    attachmentType: "upload-to-codebase" | "chat-context" | "rag-document"; // FileAttachment type
   }>;
   selectedComponent: ComponentSelection | null;
 }

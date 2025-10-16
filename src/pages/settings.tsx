@@ -217,8 +217,12 @@ export default function SettingsPage() {
   );
 }
 
+import { useTranslation } from "react-i18next";
+
 export function GeneralSettings({ appVersion }: { appVersion: string | null }) {
   const { theme, setTheme } = useTheme();
+  const { settings, updateSettings } = useSettings();
+  const { t } = useTranslation();
 
   return (
     <div
@@ -226,13 +230,13 @@ export function GeneralSettings({ appVersion }: { appVersion: string | null }) {
       className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
     >
       <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-        General Settings
+        {t("settings.general")}
       </h2>
 
       <div className="space-y-4 mb-4">
         <div className="flex items-center gap-4">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Theme
+            {t("settings.theme")}
           </label>
 
           <div className="relative bg-gray-100 dark:bg-gray-700 rounded-lg p-1 flex">
@@ -254,6 +258,19 @@ export function GeneralSettings({ appVersion }: { appVersion: string | null }) {
               </button>
             ))}
           </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            {t("settings.language")}
+          </label>
+          <select
+            value={settings?.language || "en"}
+            onChange={(e) => updateSettings({ language: e.target.value })}
+            className="bg-gray-100 dark:bg-gray-700 rounded-lg p-1 flex"
+          >
+            <option value="en">English</option>
+            <option value="th">Thai</option>
+          </select>
         </div>
       </div>
 

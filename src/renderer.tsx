@@ -4,7 +4,7 @@ import { router } from "./router";
 import { RouterProvider } from "@tanstack/react-router";
 import { PostHogProvider } from "posthog-js/react";
 import posthog from "posthog-js";
-import { getTelemetryUserId, isTelemetryOptedIn } from "./hooks/useSettings";
+import { getTelemetryUserId, isTelemetryOptedIn, useSettings } from "./hooks/useSettings";
 import {
   QueryCache,
   QueryClient,
@@ -13,6 +13,8 @@ import {
 } from "@tanstack/react-query";
 import { showError, showMcpConsentToast } from "./lib/toast";
 import { IpcClient } from "./ipc/ipc_client";
+import { I18nextProvider } from "react-i18next";
+import i18n from "./lib/i18n";
 
 // @ts-ignore
 console.log("Running in mode:", import.meta.env.MODE);
@@ -89,6 +91,13 @@ const posthogClient = posthog.init(
 );
 
 function App() {
+  const { settings } = useSettings();
+  useEffect(() => {
+    if (settings?.language) {
+      i18n.changeLanguage(settings.language);
+    }
+  }, [settings?.language]);
+
   useEffect(() => {
     // Subscribe to navigation state changes
     const unsubscribe = router.subscribe("onResolved", (navigation) => {
@@ -131,7 +140,9 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <PostHogProvider client={posthogClient}>
-        <App />
+        <I18nextProvider i18n={i18n}>
+          <App />
+        </I18nextProvider>
       </PostHogProvider>
     </QueryClientProvider>
   </StrictMode>,

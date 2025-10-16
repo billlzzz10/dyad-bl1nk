@@ -263,11 +263,17 @@ export function registerChatStreamHandlers() {
       // Process attachments if any
       let attachmentInfo = "";
       let attachmentPaths: string[] = [];
+      let ragContent = "";
 
       if (req.attachments && req.attachments.length > 0) {
         attachmentInfo = "\n\nAttachments:\n";
 
         for (const [index, attachment] of req.attachments.entries()) {
+          if (attachment.attachmentType === "rag-document") {
+            ragContent += `\n\n--- Document: ${attachment.name} ---\n${attachment.data}\n--- End Document ---\n\n`;
+            continue;
+          }
+
           // Generate a unique filename
           const hash = crypto
             .createHash("md5")
@@ -315,7 +321,8 @@ export function registerChatStreamHandlers() {
       }
 
       // Add user message to database with attachment info
-      let userPrompt = req.prompt + (attachmentInfo ? attachmentInfo : "");
+      let userPrompt =
+        ragContent + req.prompt + (attachmentInfo ? attachmentInfo : "");
       // Inline referenced prompt contents for mentions like @prompt:<id>
       try {
         const matches = Array.from(userPrompt.matchAll(/@prompt:(\d+)/g));

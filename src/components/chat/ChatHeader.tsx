@@ -4,6 +4,7 @@ import {
   PlusCircle,
   GitBranch,
   Info,
+  Trash2,
 } from "lucide-react";
 import { PanelRightClose } from "lucide-react";
 import { useAtom, useAtomValue } from "jotai";
@@ -28,6 +29,18 @@ import { useCheckoutVersion } from "@/hooks/useCheckoutVersion";
 import { useRenameBranch } from "@/hooks/useRenameBranch";
 import { isAnyCheckoutVersionInProgressAtom } from "@/store/appAtoms";
 import { LoadingBar } from "../ui/LoadingBar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ChatHeaderProps {
   isVersionPaneOpen: boolean;
@@ -51,6 +64,8 @@ export function ChatHeader({
   const isAnyCheckoutVersionInProgress = useAtomValue(
     isAnyCheckoutVersionInProgressAtom,
   );
+  const [isClearChatDialogOpen, setIsClearChatDialogOpen] = useState(false);
+  const { t } = useTranslation();
 
   const {
     branchInfo,
@@ -66,6 +81,18 @@ export function ChatHeader({
       refetchBranchInfo();
     }
   }, [appId, selectedChatId, isStreaming, refetchBranchInfo]);
+
+  const handleClearChat = async () => {
+    if (selectedChatId) {
+      try {
+        await IpcClient.getInstance().clearChat(selectedChatId);
+        await refreshChats();
+        showSuccess("Chat cleared successfully");
+      } catch (error) {
+        showError(`Failed to clear chat: ${(error as any).toString()}`);
+      }
+    }
+  };
 
   const handleCheckoutMainBranch = async () => {
     if (!appId) return;
@@ -190,6 +217,14 @@ export function ChatHeader({
             <span>New Chat</span>
           </Button>
           <Button
+            onClick={() => setIsClearChatDialogOpen(true)}
+            variant="ghost"
+            className="hidden @2xs:flex items-center justify-start gap-2 mx-2 py-3 text-red-500 hover:text-red-600"
+          >
+            <Trash2 size={16} />
+            <span>{t("chat.clearChat")}</span>
+          </Button>
+          <Button
             onClick={onVersionClick}
             variant="ghost"
             className="hidden @6xs:flex cursor-pointer items-center gap-1 text-sm px-2 py-1 rounded-md"
@@ -213,6 +248,29 @@ export function ChatHeader({
           )}
         </button>
       </div>
+      <AlertDialog
+        open={isClearChatDialogOpen}
+        onOpenChange={setIsClearChatDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("chat.clearChatConfirmation.title")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("chat.clearChatConfirmation.message")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {t("chat.clearChatConfirmation.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleClearChat}>
+              {t("chat.clearChatConfirmation.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
