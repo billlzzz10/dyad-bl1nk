@@ -87,14 +87,34 @@ export function useStreamChat({
       let ragContent = "";
       const otherAttachments: FileAttachment[] = [];
       if (attachments) {
-        for (const attachment of attachments) {
-          if (attachment.type === "rag-document") {
-            ragContent += `\n\n--- Document: ${
-              attachment.file.name
-            } ---\n${await attachment.file.text()}\n--- End Document ---\n\n`;
-          } else {
-            otherAttachments.push(attachment);
-          }
+        // Separate rag documents from other attachments
+        const ragAttachments = attachments.filter(
+          (a) => a.type === "rag-document",
+        );
+        for (const a of attachments) {
+          if (a.type !== "rag-document") otherAttachments.push(a);
+        }
+        if (ragAttachments.length > 0) {
+          // Read all RAG documents concurrently with per-file error handling and optional truncation
+          const MAX_RAG_BYTES = 200_000; // ~= 200 KB, adjust as needed
+          const texts = await Promise.all(
+            ragAttachments.map(async (attachment) => {
+              try {
+                const text = await attachment.file.text();
+                // If file has a size and is very large, truncate to avoid sending huge payloads
+                if (typeof (attachment.file as any).size === "number" && (attachment.file as any).size > MAX_RAG_BYTES) {
+                  console.warn(`[CHAT] Truncating large rag-document: ${attachment.file.name}`);
+                  return `\n\n--- Document: ${attachment.file.name} ---\n${text.slice(0, MAX_RAG_BYTES)}\n--- End Document (truncated) ---\n\n`;
+                }
+                return `\n\n--- Document: ${attachment.file.name} ---\n${text}\n--- End Document ---\n\n`;
+              } catch (err) {
+                console.error(`[CHAT] Failed to read attachment ${attachment.file.name}:`, err);
+                // Return empty string on error so one bad file doesn't abort the whole stream
+                return "";
+              }
+            }),
+          );
+          ragContent = texts.join("");
         }
       }
 
