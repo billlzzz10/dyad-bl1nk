@@ -12,7 +12,7 @@ export function useAttachments() {
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: "chat-context" | "upload-to-codebase" | "rag-document" = "chat-context",
+    type: "chat-context" | "upload-to-codebase" = "chat-context",
   ) => {
     if (e.target.files && e.target.files.length > 0) {
       const files = Array.from(e.target.files);
