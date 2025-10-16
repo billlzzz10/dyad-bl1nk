@@ -141,7 +141,7 @@ export function useStreamChat({
           selectedComponent: selectedComponent ?? null,
           chatId,
           redo,
-          attachments: otherAttachments,
+          attachments: otherAttachments.length > 0 ? otherAttachments : undefined,
           onUpdate: (updatedMessages: Message[]) => {
             if (!hasIncrementedStreamCount) {
               setStreamCountById((prev) => {
