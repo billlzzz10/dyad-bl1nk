@@ -1,4 +1,4 @@
-import re
+import os
 from playwright.sync_api import Page, expect, sync_playwright
 
 def run(playwright):
