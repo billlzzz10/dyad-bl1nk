@@ -28,7 +28,7 @@ export function useAttachments() {
 
   const handleFileSelect = (
     fileList: FileList,
-    type: "chat-context" | "upload-to-codebase" | "rag-document",
+    type: "chat-context" | "upload-to-codebase" = "chat-context",
   ) => {
     const files = Array.from(fileList);
     const fileAttachments: FileAttachment[] = files.map((file) => ({
