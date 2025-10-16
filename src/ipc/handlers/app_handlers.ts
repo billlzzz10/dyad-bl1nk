@@ -1535,7 +1535,15 @@ export function registerAppHandlers() {
   );
 
   handle("clear-chat", async (_, chatId: number) => {
+    // Verify chat exists before deleting messages
+    const chat = await db.query.chats.findFirst({
+      where: eq(chats.id, chatId),
+    });
+    if (!chat) {
+      throw new Error(`Chat with ID ${chatId} not found`);
+    }
     await db.delete(messages).where(eq(messages.chatId, chatId));
+    return { success: true };
   });
 }
 
