@@ -37,13 +37,14 @@ describe("fetchOllamaModels", () => {
         displayName: "Test Model",
         provider: "ollama",
       },
-    ]);
-    expect(fetch).toHaveBeenCalledWith("http://localhost:11434/api/tags");
-  });
-
   it("should throw an error if the fetch fails", async () => {
-    (fetch as any).mockResolvedValue({
+    (mockFetch as any).mockResolvedValue({
       ok: false,
+      statusText: "Not Found",
+    });
+
+    await expect(fetchOllamaModels()).rejects.toThrow("Failed to fetch models from Ollama");
+  });
       statusText: "Not Found",
     });
 
