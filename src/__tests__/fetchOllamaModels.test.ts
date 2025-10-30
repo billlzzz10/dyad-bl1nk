@@ -46,13 +46,43 @@ describe("fetchOllamaModels", () => {
     await expect(fetchOllamaModels()).rejects.toThrow("Failed to fetch models from Ollama");
   });
       statusText: "Not Found",
+  it("should handle empty models array", async () => {
+    const mockResponse = { models: [] };
+    (mockFetch as any).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
     });
 
-    await expect(fetchOllamaModels()).rejects.toThrow("Failed to fetch models from Ollama");
+    const result = await fetchOllamaModels();
+    expect(result.models).toEqual([]);
   });
 
-  it("should throw a connection error for fetch failures", async () => {
-    (fetch as any).mockRejectedValue(new TypeError("fetch failed"));
+  it("should handle missing models property", async () => {
+    const mockResponse = {};
+    (mockFetch as any).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
+    });
+
+    const result = await fetchOllamaModels();
+    expect(result.models).toEqual([]);
+  });
+
+  it("should respect OLLAMA_HOST environment variable", async () => {
+    const originalEnv = process.env.OLLAMA_HOST;
+    process.env.OLLAMA_HOST = "";
+    
+    const mockResponse = { models: [] };
+    (mockFetch as any).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
+    });
+
+    await fetchOllamaModels();
+    expect(mockFetch).toHaveBeenCalledWith("");
+    
+    process.env.OLLAMA_HOST = originalEnv;
+  });
 
     await expect(fetchOllamaModels()).rejects.toThrow(
       "Could not connect to Ollama. Make sure it's running at http://localhost:11434",
