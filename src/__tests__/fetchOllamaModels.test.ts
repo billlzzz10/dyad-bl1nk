@@ -1,7 +1,8 @@
 import { fetchOllamaModels } from "@/ipc/handlers/local_model_ollama_handler";
 import { describe, it, expect, vi } from "vitest";
 
-global.fetch = vi.fn();
+const mockFetch = vi.fn();
+global.fetch = mockFetch;
 
 describe("fetchOllamaModels", () => {
   it("should fetch and process models correctly", async () => {
