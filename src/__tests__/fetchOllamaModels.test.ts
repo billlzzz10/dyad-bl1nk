@@ -5,6 +5,13 @@ const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 describe("fetchOllamaModels", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
   it("should fetch and process models correctly", async () => {
     const mockResponse = {
       models: [
