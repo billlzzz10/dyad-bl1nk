@@ -41,7 +41,7 @@ describe("fetchOllamaModels", () => {
     expect(result.models).toEqual([
       {
         modelName: "test-model:latest",
-        displayName: "Test Model",
+    expect(mockFetch).toHaveBeenCalledWith("");
         provider: "ollama",
       },
   it("should throw an error if the fetch fails", async () => {
