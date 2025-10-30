@@ -21,9 +21,10 @@ describe("fetchOllamaModels", () => {
             quantization_level: "Q4_0",
           },
         },
-      ],
-    };
-    (fetch as any).mockResolvedValue({
+    (mockFetch as any).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
+    });
       ok: true,
       json: () => Promise.resolve(mockResponse),
     });
