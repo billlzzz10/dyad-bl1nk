@@ -9,7 +9,7 @@
     "url": "https://github.com/dyad-sh/dyad.git"
   },
   "engines": {
-    "node": ">=20"
+    "node": "20.x || 22.x || 23.x || 24.x"
   },
   "scripts": {
     "clean": "rimraf out scaffold/node_modules",

@@ -223,14 +223,12 @@ export function _Problems() {
   const { streamMessage } = useStreamChat();
   const [selectedChatId] = useAtom(selectedChatIdAtom);
 
-  // Whenever the problems pane is shown or the report updates, select all problems
+  // Select all problems when the report is first loaded
   useEffect(() => {
-    if (problemReport?.problems?.length) {
+    if (problemReport?.problems) {
       setSelectedKeys(new Set(problemReport.problems.map(problemKey)));
-    } else {
-      setSelectedKeys(new Set());
     }
-  }, [problemReport]);
+  }, []);
 
   if (!selectedAppId) {
     return (

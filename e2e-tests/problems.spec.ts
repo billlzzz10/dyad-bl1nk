@@ -117,6 +117,7 @@ export default App;
 
     // Click first two rows to toggle off (deselect)
     const rows = po.page.getByTestId("problem-row");
+    await expect(rows.nth(2)).toBeVisible();
     const rowCount = await rows.count();
     expect(rowCount).toBeGreaterThan(2);
     await rows.nth(0).click();
